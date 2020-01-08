@@ -1,12 +1,21 @@
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-
 buildscript {
+    repositories {
+        jcenter()
+    }
     ext {
         thymeleafVersion = project.thymeleafVersion
         libphonenumberVersion = project.libphonenumberVersion
     }
 }
+
+plugins {
+    id "com.jfrog.bintray" version "1.8.1"
+}
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+
 
 group 'ch.itds.taglib'
 
@@ -14,10 +23,32 @@ repositories {
     jcenter()
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            groupId 'ch.itds.taglib'
+            artifactId 'phonenumber-thymeleaf-taglib'
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A simple wrapper to use Google libphonenumber inside Thymeleaf')
+                root.appendNode('name', 'phonenumber-thymeleaf-taglib')
+                root.appendNode('url', 'https://github.com/itds-ch/phonenumber-thymeleaf-taglib')
+                root.children().last()
+            }
         }
     }
 }
@@ -27,3 +58,14 @@ dependencies {
     compile "com.googlecode.libphonenumber:libphonenumber:${libphonenumberVersion}"
 }
 
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['mavenJava']
+    pkg {
+        repo = 'plugins'
+        name = 'phonenumber-thymeleaf-taglib'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/itds-ch/phonenumber-thymeleaf-taglib.git'
+    }
+}
