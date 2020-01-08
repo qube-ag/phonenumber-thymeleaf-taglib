@@ -7,7 +7,7 @@ A simple wrapper to use [Google libphonenumber](https://github.com/google/libpho
 ### Add dependency
 
 ```gradle
-compile "ch.itds.taglib:phonenumber-thymeleaf-taglib:1.0.0-SNAPSHOT"
+compile "ch.itds.taglib:phonenumber-thymeleaf-taglib:1.0.0"
 ```
 
 ### Register Dialect
