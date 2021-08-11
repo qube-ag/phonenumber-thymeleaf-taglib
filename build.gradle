@@ -1,25 +1,22 @@
 apply plugin: 'java'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 buildscript {
     ext {
-        thymeleafVersion = project.thymeleafVersion
         libphonenumberVersion = project.libphonenumberVersion
+        thymeleafVersion = project.thymeleafVersion
+    }
+    repositories {
+        mavenCentral()
     }
 }
 
 group 'ch.itds.taglib'
+version project.version
 
 repositories {
-    jcenter()
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
-    }
+    mavenCentral()
 }
 
 dependencies {
@@ -27,3 +24,65 @@ dependencies {
     compile "com.googlecode.libphonenumber:libphonenumber:${libphonenumberVersion}"
 }
 
+task javadocJar(type: Jar) {
+    classifier 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    useGpgCmd()
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'phonenumber-thymeleaf-taglib'
+                description 'A simple wrapper to use Google libphonenumber inside Thymeleaf'
+                packaging 'jar'
+                url 'https://github.com/itds-ch/phonenumber-thymeleaf-taglib'
+
+                scm {
+                    connection 'scm:git:https://github.com/itds-ch/phonenumber-thymeleaf-taglib.git'
+                    developerConnection 'scm:git:https://github.com/itds-ch/phonenumber-thymeleaf-taglib.git'
+                    url 'https://github.com/itds-ch/phonenumber-thymeleaf-taglib'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://github.com/itds-ch/phonenumber-thymeleaf-taglib/blob/master/LICENSE'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'm.kobel'
+                        name 'Moritz Kobel'
+                        email 'moritz.kobel@itds.ch'
+                    }
+                }
+            }
+        }
+    }
+}
