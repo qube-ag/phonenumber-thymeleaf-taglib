@@ -2,14 +2,14 @@
 
 A simple wrapper to use [Google libphonenumber](https://github.com/google/libphonenumber) inside Thymeleaf
 
-![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/ch.itds.taglib/phonenumber-thymeleaf-taglib?server=https%3A%2F%2Fs01.oss.sonatype.org&style=flat)
+[![Maven Central](https://img.shields.io/maven-central/v/ch.itds.taglib/phonenumber-thymeleaf-taglib)](https://search.maven.org/remote_content?g=ch.itds.taglib&a=phonenumber-thymeleaf-taglib&v=LATEST)
 
 ## Usage
 
 ### Add dependency
 
 ```gradle
-compile "ch.itds.taglib:phonenumber-thymeleaf-taglib:1.0.0"
+compile "ch.itds.taglib:phonenumber-thymeleaf-taglib:1.0.1"
 ```
 
 ### Register Dialect
